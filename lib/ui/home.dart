@@ -4,13 +4,15 @@ import 'Contato.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../helper/pessoa_helper.dart';
 import '../helper/login_helper.dart';
+import '../helper/Api.dart';
 import '../utils/Dialogs.dart';
 import '../ui/LoginScreen.dart';
 
 class HomePage extends StatefulWidget {
+  final Api api;
   int login_id;
 
-  HomePage(this.login_id);
+  HomePage(this.login_id,this.api);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -18,6 +20,7 @@ class HomePage extends StatefulWidget {
 enum OrderOptions { orderaz, orderza, sair }
 
 class _HomePageState extends State<HomePage> {
+  Api api = new Api();
   Dialogs dialog = new Dialogs();
   LoginHelper helperLog = LoginHelper();
   PersonHelper helper = PersonHelper();
@@ -88,9 +91,9 @@ class _HomePageState extends State<HomePage> {
                 )));
     if (recContact != null) {
       if (person != null) {
-        await helper.updatePerson(recContact,widget.login_id);
+        await api.atualizarContato(recContact);
       } else {
-        await helper.savePerson(recContact,widget.login_id);
+        await api.salvaContato(recContact);
       }
       _getAllPersons();
     }
@@ -196,7 +199,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       onPressed: () {
-        helper.deletePerson(person[index].id);
+        api.deletarContato(person[index].id.toString());
         setState(() {
           person.removeAt(index);
           Navigator.pop(context);
@@ -207,7 +210,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getAllPersons() async{
-    helper.getAllPersons(widget.login_id).then((list) {
+    api.contatos().then((list){
       setState(() {
         person = list;
       });

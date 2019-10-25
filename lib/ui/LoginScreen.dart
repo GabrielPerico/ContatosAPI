@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../helper/login_helper.dart';
+import '../helper/Api.dart';
 import 'home.dart';
 import '../utils/Dialogs.dart';
 import '../ui/Cadastro.dart';
@@ -7,7 +8,9 @@ import 'package:flutter/services.dart';
 
 class LoginScreen extends StatefulWidget {
   final Login login;
-  LoginScreen({this.login});
+  final Api api;
+
+  LoginScreen({this.login, this.api});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -15,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   LoginHelper helper = LoginHelper();
+  Api api = new Api();
   List<Login> login = List();
   Dialogs dialog = new Dialogs();
   final _emailController = TextEditingController();
@@ -23,10 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formLogin = GlobalKey<FormState>();
 
-
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return Scaffold(
       backgroundColor: Colors.blueAccent[50],
       body: WillPopScope(
@@ -62,31 +64,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 30),
                     RaisedButton(
-
-                      child:
-                      Row(
+                      child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Icon(Icons.https),
                             Text("Entrar"),
-                          ]
-                      ),
-
+                          ]),
                       color: Colors.blueAccent,
                       textColor: Colors.white,
                       onPressed: () async {
                         if (_formLogin.currentState.validate()) {
-                          Login user = await helper.getLogin(_emailController.text,
-                              _senhaController.text);
-                          if (user !=
-                              null) {
-                            helper.saveLogado(user.id);
+                          Login user = await api.login(
+                              _emailController.text, _senhaController.text);
+                          if (user != null) {
+                            helper.saveLogado(user.id,user.token);
                             Navigator.pop(context);
                             await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HomePage(user.id)));
+                                    builder: (context) => HomePage(user.id, Api(token: user.token))));
                           } else {
                             dialog.showAlertDialog(
                                 context, 'Aviso', 'Login inválido');
@@ -95,7 +92,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     RaisedButton(
-
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -115,10 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               )),
-          onWillPop: (){
+          onWillPop: () {
             SystemNavigator.pop();
-          }
-          ),
+          }),
     );
   }
 }

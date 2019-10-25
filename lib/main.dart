@@ -3,11 +3,12 @@ import 'ui/home.dart';
 import 'ui/LoginScreen.dart';
 import 'package:flutter/services.dart';
 import 'helper/login_helper.dart';
+import 'helper/Api.dart';
 
 void main() async{
   LoginHelper helper = LoginHelper();
 
-  int logado = await helper.getLogado();
+  Logado logado = await helper.getLogado();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
@@ -16,7 +17,7 @@ void main() async{
 
   runApp(
       MaterialApp(
-      home: (logado>0)?HomePage(logado):LoginScreen(),
+      home: (logado != null)?HomePage(logado.id,Api(token: logado.logadoToken)):LoginScreen(),
       debugShowCheckedModeBanner: false,
     ));
 
