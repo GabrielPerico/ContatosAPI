@@ -20,7 +20,6 @@ class HomePage extends StatefulWidget {
 enum OrderOptions { orderaz, orderza, sair }
 
 class _HomePageState extends State<HomePage> {
-  Api api = new Api();
   Dialogs dialog = new Dialogs();
   LoginHelper helperLog = LoginHelper();
   PersonHelper helper = PersonHelper();
@@ -91,9 +90,9 @@ class _HomePageState extends State<HomePage> {
                 )));
     if (recContact != null) {
       if (person != null) {
-        await api.atualizarContato(recContact);
+        await widget.api.atualizarContato(recContact);
       } else {
-        await api.salvaContato(recContact);
+        await widget.api.salvaContato(recContact);
       }
       _getAllPersons();
     }
@@ -199,7 +198,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       onPressed: () {
-        api.deletarContato(person[index].id.toString());
+        widget.api.deletarContato(person[index].id.toString());
         setState(() {
           person.removeAt(index);
           Navigator.pop(context);
@@ -210,9 +209,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getAllPersons() async{
-    api.contatos().then((list){
+    widget.api.contatos().then((list){
       setState(() {
         person = list;
+        debugPrint(person.toString());
       });
     });
   }

@@ -9,7 +9,7 @@ class PersonHelper {
   PersonHelper.internal();
 
   Databases databases = new Databases();
-
+/*
   Future<Person> savePerson(Person person,int login_id) async {
     Person person2 = person;
     Person novaPerson = Person();
@@ -47,7 +47,7 @@ class PersonHelper {
     novaPerson.telefone = person2.telefone;
     Database dbPerson = await databases.db;
     return await dbPerson.update(personTable,
-        novaPerson.toMap(),
+        novaPerson.toJson(),
         where: "$idPersonColumn = ?",
         whereArgs: [person2.id]);
   }
@@ -57,7 +57,7 @@ class PersonHelper {
     List listMap = await dbPerson.rawQuery("SELECT * FROM $personTable WHERE login_id=$login_id");
     List<Person> listPerson = List();
     for(Map m in listMap){
-      listPerson.add(Person.fromMap(m));
+      listPerson.add(Person.fromJson(m));
     }
     return listPerson;
   }
@@ -66,40 +66,35 @@ class PersonHelper {
     Database dbPerson = await databases.db;
     dbPerson.close();
   }
-
+*/
 }
 
 class Person {
-
-  int id;
+  dynamic id;
   String nome;
   String telefone;
-  int login_id;
+  dynamic usuario_id;
 
-  Person();
+  Person({this.id, this.nome, this.telefone, this.usuario_id});
 
-  Person.fromMap(Map map){
-    id = map[idPersonColumn];
-    nome = map[nomePersonColumn];
-    telefone = map[telefonePersonColumn];
-    login_id = map[login_idPersonColumn];
+  factory Person.fromJson(Map<String, dynamic> json) {
+    return Person(
+      id: json['id'],
+      nome: json['nome'],
+      telefone: json['telefone'],
+      usuario_id: json['usuario_id'],
+    );
   }
 
-  Map toMap() {
-    Map<String, dynamic> map = {
-      nomePersonColumn: nome,
-      telefonePersonColumn: telefone,
-      login_idPersonColumn: login_id
-    };
-    if(id != null){
-      map[idPersonColumn] = id;
-    }
-    return map;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['nome'] = this.nome;
+    data['telefone'] = this.telefone;
+    return data;
   }
-
   @override
   String toString() {
-    return "Person(id: $id, name: $nome, telefone: $telefone)";
+    return "Person(id: $id, nome: $nome, telefone: $telefone, usuario_id: $usuario_id)";
   }
-
 }
